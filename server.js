@@ -4,7 +4,7 @@ const connectDB = require('./config/db');
 const swaggerUi = require('swagger-ui-express');
 
 const app = express();
-
+app.use(cors());
 // DB
 connectDB();
 
