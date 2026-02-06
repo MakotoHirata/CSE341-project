@@ -1,0 +1,45 @@
+### Get all contacts
+GET http://localhost:3000/tasks
+
+###
+
+### Get single contact 1
+GET http://localhost:3000/tasks/6985f55b827acec8c9b62dee
+
+###
+
+### Get single contact 2
+GET http://localhost:3000/tasks/69860322c674901e8216b450
+
+###
+
+### Get single contact 3
+GET http://localhost:3000/tasks/6986083ca1da1a1e56847abd
+
+
+
+### Create Contact
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+    "_id": "6985f55b827acec8c9b62dee",
+    "title": "any",
+    "status": "todo",
+    "priority": "medium",
+    "isArchived": false,
+    "createdAt": "2026-02-06T14:06:19.583Z",
+    "updatedAt": "2026-02-06T14:06:19.583Z",
+    "__v": 0
+  }
+
+### Update Contact
+PUT http://localhost:3000/tasks/6975b3dd4ccc369c35760249
+Content-Type: application/json
+
+{
+    "status": "todo2",
+}
+
+### Delete Contact
+DELETE http://localhost:3000/tasks/6986083ca1da1a1e56847abd
