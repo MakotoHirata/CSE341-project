@@ -5,8 +5,14 @@ const doc = {
     title: 'Task Management API',
     description: 'API for managing tasks'
   },
-  host: 'localhost:3000',
-  schemes: ['http']
+  host:
+    process.env.NODE_ENV === 'production'
+      ? 'cse341-ft2m.onrender.com'
+      : 'localhost:3000',
+  schemes:
+    process.env.NODE_ENV === 'production'
+      ? ['https']
+      : ['http']
 };
 
 const outputFile = './swagger/swagger.json';
