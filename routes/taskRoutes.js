@@ -3,7 +3,9 @@ const express = require('express');
 const router = express.Router();
 const {
   getTasks,
-  createTask
+  createTask,
+  updateTask,
+  deleteTask
 } = require('../controllers/taskController');
 
 /**
@@ -20,7 +22,7 @@ const {
 router.get('/', getTasks);
 
 /**
- * @swagger
+ * 
  * /tasks:
  *   post:
  *     summary: Create a new task
@@ -49,46 +51,66 @@ router.get('/', getTasks);
 router.post('/', createTask);
 
 /**
- * @swagger
+@swagger
  * /tasks/{id}:
- *   get:
- *     summary: Get task by ID
- *     tags:
- *       - Tasks
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Task data
- *       404:
- *         description: Task not found
+ *  put:
+ *    summary: Update task
+ *    tags: [Tasks]
+ *    parameters:
+ *     - in: path
+ *        name: id
+ *        required: true
+ *        schema:
+ *          type: string
+ *    requestBody:
+ *      required: true
+ *      content:
+ *       application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              title:
+ *                type: string
+ *              description:
+ *                type: string
+ *              priority:
+ *                type: string
+ *                enum: [low, medium, high]
+ *              completed:
+ *                type: boolean
+ *    responses:
+ *      200:
+ *        description: Task updated
+ *      400:
+ *        description: Bad request
+ *      404:
+ *        description: Task not found
+ *      500:
+ *        description: Internal server error
  */
-router.get('/:id', (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet' });
-});
+router.put('/:id', updateTask);
 
 /**
  * @swagger
  * /tasks/{id}:
- *   put:
- *     summary: Update task
- *     tags:
- *       - Tasks
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *     responses:
- *       200:
- *         description: Task updated
+ * delete:
+ *   summary: Delete task
+ *   tags: [Tasks]
+ *   parameters:
+ *     - in: path
+ *       name: id
+ *       required: true
+ *       schema:
+ *         type: string
+ *   responses:
+ *     200:
+ *       description: Task deleted successfully
+ *     404:
+ *       description: Task not found
+ *     500:
+ *       description: Internal server error
  */
-router.put('/:id', (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet' });
-});
+router.delete('/:id', deleteTask);
 
 /**
  * @swagger

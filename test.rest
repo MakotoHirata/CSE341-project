@@ -34,12 +34,16 @@ Content-Type: application/json
   }
 
 ### Update Contact
-PUT http://localhost:3000/tasks/6975b3dd4ccc369c35760249
+PUT http://localhost:3000/tasks/698a96b8fdf5c668ff083f5b
 Content-Type: application/json
 
 {
-    "status": "todo2",
+  "title": "Updated Task Title",
+  "priority": "high",
+  "status": "in-progress",
+  "isArchived": false
 }
+
 
 ### Delete Contact
 DELETE http://localhost:3000/tasks/6986083ca1da1a1e56847abd
