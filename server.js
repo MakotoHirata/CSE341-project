@@ -9,10 +9,12 @@ require('./config/passport');
 
 const app = express();
 app.use(cors());
+app.set('trust proxy', 1);
 // DB
 connectDB();
 
 // middleware
+
 app.use(express.json());
 app.use(
   session({
@@ -21,6 +23,16 @@ app.use(
     saveUninitialized: false
   })
 );
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,      // Renderはhttps
+    sameSite: 'none'
+  }
+}));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
