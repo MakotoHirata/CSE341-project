@@ -7,7 +7,10 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/"
+      "url": "https://cse341-ft2m.onrender.com"
+    },
+    {
+      "url": "http://localhost:3000"
     }
   ],
   "paths": {
