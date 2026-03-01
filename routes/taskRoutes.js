@@ -1,6 +1,7 @@
 const express = require('express');
 const auth = require('../middleware/auth');
 const router = express.Router();
+const { validateCreateTask } = require('../middleware/taskValidator');
 
 const {
   getTasks,
@@ -58,7 +59,7 @@ router.get('/', auth, getTasks);
  *   }
  * }
  */
-router.post('/', auth, createTask);
+router.post('/', auth, validateCreateTask, createTask);
 
 /**
  * #swagger.tags = ['Tasks']
