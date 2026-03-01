@@ -12,13 +12,23 @@ const doc = {
   schemes:
     process.env.NODE_ENV === 'production'
       ? ['https']
-      : ['http']
+      : ['http'],
+  components: {
+  securitySchemes: {
+    cookieAuth: {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'connect.sid'
+    }
+  }
+}
 };
 
 const outputFile = './swagger/swagger.json';
 const endpointsFiles = [
   './server.js',
-  './routes/taskRoutes.js'
+  './routes/taskRoutes.js',
+  './routes/authRoutes.js'
 ];
 
 swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {

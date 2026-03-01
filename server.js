@@ -8,38 +8,45 @@ const passport = require('passport');
 require('./config/passport');
 
 const app = express();
-app.use(cors());
+
 app.set('trust proxy', 1);
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
 // DB
 connectDB();
 
-// middleware
-
+// body parser
 app.use(express.json());
+
+// session
 app.use(
   session({
-    secret: 'secretkey',
+    secret: process.env.SESSION_SECRET || 'secretkey',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    }
   })
 );
-app.use(session({
-  secret: 'keyboard cat',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: true,      // Renderはhttps
-    sameSite: 'none'
-  }
-}));
 
-
+// passport
 app.use(passport.initialize());
 app.use(passport.session());
 
 // routes
+/* #swagger.start */
 app.use('/tasks', require('./routes/taskRoutes'));
+/* #swagger.end */
+
+/* #swagger.start */
 app.use('/auth', require('./routes/authRoutes'));
+/* #swagger.end */
 
 // Swagger UI
 try {

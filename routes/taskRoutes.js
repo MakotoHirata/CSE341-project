@@ -1,6 +1,7 @@
-
 const express = require('express');
+const auth = require('../middleware/auth');
 const router = express.Router();
+
 const {
   getTasks,
   createTask,
@@ -9,126 +10,105 @@ const {
 } = require('../controllers/taskController');
 
 /**
- * @swagger
- * /tasks:
- *   get:
- *     summary: Get all tasks
- *     tags:
- *       - Tasks
- *     responses:
- *       200:
- *         description: List of tasks
+ * #swagger.tags = ['Tasks']
+ * #swagger.summary = 'Get all tasks'
+ * #swagger.description = 'Retrieve all tasks for the logged-in user'
+ * #swagger.security = [{ "cookieAuth": [] }]
  */
-router.get('/', getTasks);
+router.get('/', auth, getTasks);
 
 /**
- * 
- * /tasks:
- *   post:
- *     summary: Create a new task
- *     tags:
- *       - Tasks
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - title
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high]
- *     responses:
- *       201:
- *         description: Task created
+ * #swagger.tags = ['Tasks']
+ * #swagger.summary = 'Create a new task'
+ * #swagger.description = 'Create a new task'
+ * #swagger.security = [{ "cookieAuth": [] }]
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: {
+ *         type: "object",
+ *         required: ["title"],
+ *         properties: {
+ *           title: {
+ *             type: "string",
+ *             example: "Buy groceries"
+ *           },
+ *           description: {
+ *             type: "string",
+ *             example: "Milk and eggs"
+ *           },
+ *           status: {
+ *             type: "string",
+ *             enum: ["todo", "doing", "done"],
+ *             example: "todo"
+ *           },
+ *           priority: {
+ *             type: "string",
+ *             enum: ["low", "medium", "high"],
+ *             example: "medium"
+ *           },
+ *           isArchived: {
+ *             type: "boolean",
+ *             example: false
+ *           }
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
  */
-router.post('/', createTask);
+router.post('/', auth, createTask);
 
 /**
-@swagger
- * /tasks/{id}:
- *  put:
- *    summary: Update task
- *    tags: [Tasks]
- *    parameters:
- *     - in: path
- *        name: id
- *        required: true
- *        schema:
- *          type: string
- *    requestBody:
- *      required: true
- *      content:
- *       application/json:
- *          schema:
- *            type: object
- *            properties:
- *              title:
- *                type: string
- *              description:
- *                type: string
- *              priority:
- *                type: string
- *                enum: [low, medium, high]
- *              completed:
- *                type: boolean
- *    responses:
- *      200:
- *        description: Task updated
- *      400:
- *        description: Bad request
- *      404:
- *        description: Task not found
- *      500:
- *        description: Internal server error
+ * #swagger.tags = ['Tasks']
+ * #swagger.summary = 'Update a task'
+ * #swagger.description = 'Update a task by ID'
+ * #swagger.security = [{ "cookieAuth": [] }]
+ * #swagger.parameters['id'] = {
+ *   in: 'path',
+ *   required: true,
+ *   type: 'string',
+ *   description: 'Task ID'
+ * }
+ * #swagger.requestBody = {
+ *   required: true,
+ *   content: {
+ *     "application/json": {
+ *       schema: {
+ *         type: "object",
+ *         properties: {
+ *           title: { type: "string" },
+ *           description: { type: "string" },
+ *           priority: {
+ *             type: "string",
+ *             enum: ["low", "medium", "high"]
+ *           },
+ *           status: {
+ *             type: "string",
+ *             enum: ["todo", "doing", "done"]
+ *           },
+ *           isArchived: { type: "boolean" }
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
  */
-router.put('/:id', updateTask);
+router.put('/:id', auth, updateTask);
 
 /**
- * @swagger
- * /tasks/{id}:
- * delete:
- *   summary: Delete task
- *   tags: [Tasks]
- *   parameters:
- *     - in: path
- *       name: id
- *       required: true
- *       schema:
- *         type: string
- *   responses:
- *     200:
- *       description: Task deleted successfully
- *     404:
- *       description: Task not found
- *     500:
- *       description: Internal server error
+ * #swagger.tags = ['Tasks']
+ * #swagger.summary = 'Delete a task'
+ * #swagger.description = 'Delete a task by ID'
+ * #swagger.security = [{ "cookieAuth": [] }]
+ * #swagger.parameters['id'] = {
+ *   in: 'path',
+ *   required: true,
+ *   type: 'string',
+ *   description: 'Task ID'
+ * }
  */
-router.delete('/:id', deleteTask);
-
-/**
- * @swagger
- * /tasks/{id}:
- *   delete:
- *     summary: Delete task
- *     tags:
- *       - Tasks
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *     responses:
- *       200:
- *         description: Task deleted
- */
-router.delete('/:id', (req, res) => {
-  res.status(501).json({ message: 'Not implemented yet' });
-});
+router.delete('/:id', auth, deleteTask);
 
 module.exports = router;

@@ -5,7 +5,11 @@
     "description": "API for managing tasks",
     "version": "1.0.0"
   },
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
   "paths": {
     "/": {
       "get": {
@@ -13,6 +17,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -27,6 +34,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "500": {
             "description": "Internal Server Error"
@@ -55,6 +65,9 @@
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -69,6 +82,83 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "example": "Buy groceries"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Milk and eggs"
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "low",
+                      "medium",
+                      "high"
+                    ],
+                    "example": "medium"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "todo",
+                      "doing",
+                      "done"
+                    ],
+                    "example": "todo"
+                  },
+                  "isArchived": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -81,16 +171,29 @@
                 "properties": {
                   "title": {
                     "example": "any"
+                  },
+                  "description": {
+                    "example": "any"
+                  },
+                  "priority": {
+                    "example": "any"
+                  },
+                  "status": {
+                    "example": "any"
+                  },
+                  "completed": {
+                    "example": "any"
+                  },
+                  "isArchived": {
+                    "example": "any"
                   }
                 }
               }
             }
           }
         }
-      }
-    },
-    "/tasks/{id}": {
-      "get": {
+      },
+      "delete": {
         "description": "",
         "parameters": [
           {
@@ -103,13 +206,67 @@
           }
         ],
         "responses": {
-          "501": {
-            "description": "Not Implemented"
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
-      },
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/{id}": {
       "put": {
-        "summary": "",
+        "description": "",
         "parameters": [
           {
             "name": "id",
@@ -120,55 +277,50 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
         "requestBody": {
-          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "title": {
-                    "type": "string"
+                    "example": "any"
                   },
-                  "status": {
-                    "type": "string",
-                    "enum": [
-                      "todo",
-                      "in-progress",
-                      "done"
-                    ]
+                  "description": {
+                    "example": "any"
                   },
                   "priority": {
-                    "type": "string",
-                    "enum": [
-                      "low",
-                      "medium",
-                      "high"
-                    ]
+                    "example": "any"
+                  },
+                  "status": {
+                    "example": "any"
+                  },
+                  "completed": {
+                    "example": "any"
                   },
                   "isArchived": {
-                    "type": "boolean"
+                    "example": "any"
                   }
-                },
-                "required": [
-                  "title"
-                ]
+                }
               }
             }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Task updated"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "404": {
-            "description": "Task not found"
-          },
-          "500": {
-            "description": "Internal server error"
           }
         }
       },
@@ -185,66 +337,71 @@
           }
         ],
         "responses": {
-          "501": {
-            "description": "Not Implemented"
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/{id}": {
+    "/google": {
       "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "501": {
-            "description": "Not Implemented"
+          "default": {
+            "description": ""
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/google/callback": {
+      "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "501": {
-            "description": "Not Implemented"
+          "200": {
+            "description": "OK"
           }
         }
-      },
-      "delete": {
+      }
+    },
+    "/logout": {
+      "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
-          "501": {
-            "description": "Not Implemented"
+          "200": {
+            "description": "OK"
           }
         }
+      }
+    },
+    "/me": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid"
       }
     }
   }
