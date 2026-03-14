@@ -7,11 +7,15 @@
   },
   "servers": [
     {
+      "url": "/",
+      "description": "Current host (recommended)"
+    },
+    {
       "url": "http://localhost:3000",
       "description": "Local"
     },
     {
-      "url": "https://team-task-manager-api.onrender.com",
+      "url": "https://cse341-project-du0g.onrender.com",
       "description": "Render"
     }
   ],
