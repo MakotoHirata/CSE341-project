@@ -1,115 +1,25 @@
 const express = require('express');
 const auth = require('../middleware/auth');
-const router = express.Router();
-const { validateCreateTask } = require('../middleware/taskValidator');
-
 const {
   getTasks,
+  getTaskById,
   createTask,
   updateTask,
   deleteTask
 } = require('../controllers/taskController');
+const {
+  validateObjectIdParam,
+  validateTaskCreate,
+  validateTaskUpdate
+} = require('../middleware/validators');
+const handleValidationErrors = require('../middleware/handleValidation');
 
-/**
- * #swagger.tags = ['Tasks']
- * #swagger.summary = 'Get all tasks'
- * #swagger.description = 'Retrieve all tasks for the logged-in user'
- * #swagger.security = [{ "cookieAuth": [] }]
- */
+const router = express.Router();
+
 router.get('/', auth, getTasks);
-
-/**
- * #swagger.tags = ['Tasks']
- * #swagger.summary = 'Create a new task'
- * #swagger.description = 'Create a new task'
- * #swagger.security = [{ "cookieAuth": [] }]
- * #swagger.requestBody = {
- *   required: true,
- *   content: {
- *     "application/json": {
- *       schema: {
- *         type: "object",
- *         required: ["title"],
- *         properties: {
- *           title: {
- *             type: "string",
- *             example: "Buy groceries"
- *           },
- *           description: {
- *             type: "string",
- *             example: "Milk and eggs"
- *           },
- *           status: {
- *             type: "string",
- *             enum: ["todo", "doing", "done"],
- *             example: "todo"
- *           },
- *           priority: {
- *             type: "string",
- *             enum: ["low", "medium", "high"],
- *             example: "medium"
- *           },
- *           isArchived: {
- *             type: "boolean",
- *             example: false
- *           }
- *         }
- *       }
- *     }
- *   }
- * }
- */
-router.post('/', auth, validateCreateTask, createTask);
-
-/**
- * #swagger.tags = ['Tasks']
- * #swagger.summary = 'Update a task'
- * #swagger.description = 'Update a task by ID'
- * #swagger.security = [{ "cookieAuth": [] }]
- * #swagger.parameters['id'] = {
- *   in: 'path',
- *   required: true,
- *   type: 'string',
- *   description: 'Task ID'
- * }
- * #swagger.requestBody = {
- *   required: true,
- *   content: {
- *     "application/json": {
- *       schema: {
- *         type: "object",
- *         properties: {
- *           title: { type: "string" },
- *           description: { type: "string" },
- *           priority: {
- *             type: "string",
- *             enum: ["low", "medium", "high"]
- *           },
- *           status: {
- *             type: "string",
- *             enum: ["todo", "doing", "done"]
- *           },
- *           isArchived: { type: "boolean" }
- *         }
- *       }
- *     }
- *   }
- * }
- */
-router.put('/:id', auth, updateTask);
-
-/**
- * #swagger.tags = ['Tasks']
- * #swagger.summary = 'Delete a task'
- * #swagger.description = 'Delete a task by ID'
- * #swagger.security = [{ "cookieAuth": [] }]
- * #swagger.parameters['id'] = {
- *   in: 'path',
- *   required: true,
- *   type: 'string',
- *   description: 'Task ID'
- * }
- */
-router.delete('/:id', auth, deleteTask);
+router.get('/:id', auth, validateObjectIdParam('id'), handleValidationErrors, getTaskById);
+router.post('/', auth, validateTaskCreate, handleValidationErrors, createTask);
+router.put('/:id', auth, validateObjectIdParam('id'), validateTaskUpdate, handleValidationErrors, updateTask);
+router.delete('/:id', auth, validateObjectIdParam('id'), handleValidationErrors, deleteTask);
 
 module.exports = router;

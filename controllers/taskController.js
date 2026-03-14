@@ -1,75 +1,126 @@
 const Task = require('../models/task');
+const Project = require('../models/project');
+const User = require('../models/user');
 
-// GET tasks
-exports.getTasks = async (req, res) => {
+exports.getTasks = async (req, res, next) => {
   try {
-    const tasks = await Task.find();
-    res.status(200).json(tasks);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const tasks = await Task.find().sort({ createdAt: -1 });
+    return res.status(200).json(tasks);
+  } catch (error) {
+    return next(error);
   }
 };
 
-// POST tasks
-exports.createTask = async (req, res) => {
+exports.getTaskById = async (req, res, next) => {
   try {
-    if (!req.body.title) {
-      return res.status(400).json({ message: 'Title is required' });
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
     }
 
-    const task = new Task(req.body);
+    return res.status(200).json(task);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.createTask = async (req, res, next) => {
+  try {
+    const projectExists = await Project.exists({ _id: req.body.projectId });
+    if (!projectExists) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    if (req.body.assignedUserId) {
+      const assignedUserExists = await User.exists({ _id: req.body.assignedUserId });
+      if (!assignedUserExists) {
+        return res.status(404).json({ message: 'Assigned user not found' });
+      }
+    }
+
+    const task = await Task.create({
+      title: req.body.title,
+      description: req.body.description || '',
+      status: req.body.status,
+      priority: req.body.priority,
+      dueDate: req.body.dueDate,
+      projectId: req.body.projectId,
+      assignedUserId: req.body.assignedUserId || null
+    });
+
+    return res.status(201).json(task);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+exports.updateTask = async (req, res, next) => {
+  try {
+    const task = await Task.findById(req.params.id);
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+
+    if (req.body.projectId) {
+      const projectExists = await Project.exists({ _id: req.body.projectId });
+      if (!projectExists) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+      task.projectId = req.body.projectId;
+    }
+
+    if (req.body.assignedUserId !== undefined) {
+      if (req.body.assignedUserId === null) {
+        task.assignedUserId = null;
+      } else {
+        const assignedUserExists = await User.exists({ _id: req.body.assignedUserId });
+        if (!assignedUserExists) {
+          return res.status(404).json({ message: 'Assigned user not found' });
+        }
+        task.assignedUserId = req.body.assignedUserId;
+      }
+    }
+
+    if (req.body.title !== undefined) {
+      task.title = req.body.title;
+    }
+
+    if (req.body.description !== undefined) {
+      task.description = req.body.description;
+    }
+
+    if (req.body.status !== undefined) {
+      task.status = req.body.status;
+    }
+
+    if (req.body.priority !== undefined) {
+      task.priority = req.body.priority;
+    }
+
+    if (req.body.dueDate !== undefined) {
+      task.dueDate = req.body.dueDate;
+    }
+
     await task.save();
-
-    res.status(201).json(task);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(200).json(task);
+  } catch (error) {
+    return next(error);
   }
 };
 
-// PUT /tasks/:id
-exports.updateTask = async (req, res) => {
-  try {
-    if (!req.body) {
-      return res.status(400).json({ message: 'Request body is missing' });
-    }
-
-    const { title, description, priority, status, completed, isArchived } = req.body;
-
-    const task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
-
-    if (title !== undefined) task.title = title;
-    if (description !== undefined) task.description = description;
-    if (priority !== undefined) {
-      if (!['low','medium','high'].includes(priority))
-        return res.status(400).json({ message: 'Invalid priority' });
-      task.priority = priority;
-    }
-    if (status !== undefined) {
-      if (!['todo','doing','done'].includes(status))
-        return res.status(400).json({ message: 'Invalid status' });
-      task.status = status;
-    }
-    if (completed !== undefined) task.completed = completed;
-    if (isArchived !== undefined) task.isArchived = isArchived;
-
-    const updatedTask = await task.save();
-    res.status(200).json(updatedTask);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-
-// DELETE /tasks/:id
-exports.deleteTask = async (req, res) => {
+exports.deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).json({ message: 'Task not found' });
+
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
 
     await task.deleteOne();
-    res.status(200).json({ message: 'Task deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    return res.status(200).json({ message: 'Task deleted successfully' });
+  } catch (error) {
+    return next(error);
   }
 };
