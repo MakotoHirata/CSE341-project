@@ -67,11 +67,20 @@ const validateCommentCreate = [
     .withMessage('commentText is required')
 ];
 
+const validateCommentUpdate = [
+  body('commentText')
+    .isString()
+    .withMessage('commentText must be a string')
+    .notEmpty()
+    .withMessage('commentText is required')
+];
+
 module.exports = {
   validateObjectIdParam,
   validateProjectCreate,
   validateProjectUpdate,
   validateTaskCreate,
   validateTaskUpdate,
-  validateCommentCreate
+  validateCommentCreate,
+  validateCommentUpdate
 };

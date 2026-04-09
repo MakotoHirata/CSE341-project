@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Team Task Manager API",
-    "description": "Node.js + Express + MongoDB backend API for team task management.",
+    "description": "Node.js + Express + MongoDB backend API for team task management. Authentication is handled with Google OAuth and protected routes use the session cookie returned after login.",
     "version": "1.0.0"
   },
   "servers": [
@@ -20,28 +20,54 @@
     }
   ],
   "tags": [
-    { "name": "Auth", "description": "Google OAuth authentication endpoints" },
-    { "name": "Users", "description": "User resources" },
-    { "name": "Projects", "description": "Project resources" },
-    { "name": "Tasks", "description": "Task resources" },
-    { "name": "Comments", "description": "Comment resources" }
+    {
+      "name": "Auth",
+      "description": "Google OAuth authentication endpoints"
+    },
+    {
+      "name": "Users",
+      "description": "User resources"
+    },
+    {
+      "name": "Projects",
+      "description": "Project resources"
+    },
+    {
+      "name": "Tasks",
+      "description": "Task resources"
+    },
+    {
+      "name": "Comments",
+      "description": "Comment resources"
+    }
   ],
   "paths": {
     "/auth/google": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Start Google OAuth login",
         "responses": {
-          "302": { "description": "Redirect to Google OAuth" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "302": {
+            "description": "Redirect to Google OAuth"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/auth/google/callback": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Google OAuth callback",
         "responses": {
+          "302": {
+            "description": "Redirect when authentication fails"
+          },
           "200": {
             "description": "Login successful",
             "content": {
@@ -49,21 +75,32 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Login successful" },
-                    "user": { "$ref": "#/components/schemas/User" }
+                    "message": {
+                      "type": "string",
+                      "example": "Login successful"
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/auth/logout": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Logout current user",
         "responses": {
           "200": {
@@ -73,21 +110,32 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Logged out successfully" }
+                    "message": {
+                      "type": "string",
+                      "example": "Logged out successfully"
+                    }
                   }
                 }
               }
             }
           },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/auth/me": {
       "get": {
-        "tags": ["Auth"],
+        "tags": [
+          "Auth"
+        ],
         "summary": "Get current authenticated user",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "Current user",
@@ -96,23 +144,38 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "authenticated": { "type": "boolean", "example": true },
-                    "user": { "$ref": "#/components/schemas/User" }
+                    "authenticated": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "user": {
+                      "$ref": "#/components/schemas/User"
+                    }
                   }
                 }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/users": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get all users",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of users",
@@ -120,27 +183,41 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/User" }
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
                 }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/users/{id}": {
       "get": {
-        "tags": ["Users"],
+        "tags": [
+          "Users"
+        ],
         "summary": "Get user by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -149,22 +226,38 @@
             "description": "User found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/User" }
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/projects": {
       "get": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Get all projects",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of projects",
@@ -172,24 +265,38 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Project" }
+                  "items": {
+                    "$ref": "#/components/schemas/Project"
+                  }
                 }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "post": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Create a project",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ProjectCreateInput" }
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateInput"
+              }
             }
           }
         },
@@ -198,27 +305,43 @@
             "description": "Project created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/projects/{id}": {
       "get": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Get project by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -227,26 +350,44 @@
             "description": "Project found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "put": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Update project by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -254,7 +395,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ProjectUpdateInput" }
+              "schema": {
+                "$ref": "#/components/schemas/ProjectUpdateInput"
+              }
             }
           }
         },
@@ -263,26 +406,44 @@
             "description": "Project updated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Project" }
+                "schema": {
+                  "$ref": "#/components/schemas/Project"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "delete": {
-        "tags": ["Projects"],
+        "tags": [
+          "Projects"
+        ],
         "summary": "Delete project by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -294,24 +455,41 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Project deleted successfully" }
+                    "message": {
+                      "type": "string",
+                      "example": "Project deleted successfully"
+                    }
                   }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/tasks": {
       "get": {
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Get all tasks",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of tasks",
@@ -319,24 +497,39 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Task" }
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
                 }
               }
             }
           },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "post": {
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Create a task",
-        "security": [{ "cookieAuth": [] }],
+        "description": "Creates a task for an existing project. Replace `projectId` with a real project `_id` from `POST /projects` or `GET /projects`. If `assignedUserId` is included, it must be an existing user `_id`.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TaskCreateInput" }
+              "schema": {
+                "$ref": "#/components/schemas/TaskCreateInput"
+              }
             }
           }
         },
@@ -345,28 +538,46 @@
             "description": "Task created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/tasks/{id}": {
       "get": {
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Get task by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -375,26 +586,45 @@
             "description": "Task found",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "put": {
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Update task by ID",
-        "security": [{ "cookieAuth": [] }],
+        "description": "Updates a task. If you send `projectId`, it must reference an existing project. If you send `assignedUserId`, it must reference an existing user.",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -402,7 +632,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/TaskUpdateInput" }
+              "schema": {
+                "$ref": "#/components/schemas/TaskUpdateInput"
+              }
             }
           }
         },
@@ -411,26 +643,44 @@
             "description": "Task updated",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Task" }
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       },
       "delete": {
-        "tags": ["Tasks"],
+        "tags": [
+          "Tasks"
+        ],
         "summary": "Delete task by ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -442,30 +692,49 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Task deleted successfully" }
+                    "message": {
+                      "type": "string",
+                      "example": "Task deleted successfully"
+                    }
                   }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/comments/{taskId}": {
       "get": {
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "summary": "Get comments by task ID",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "taskId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -476,28 +745,46 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Comment" }
+                  "items": {
+                    "$ref": "#/components/schemas/Comment"
+                  }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/comments": {
       "post": {
-        "tags": ["Comments"],
+        "tags": [
+          "Comments"
+        ],
         "summary": "Create a comment",
-        "security": [{ "cookieAuth": [] }],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CommentCreateInput" }
+              "schema": {
+                "$ref": "#/components/schemas/CommentCreateInput"
+              }
             }
           }
         },
@@ -506,28 +793,102 @@
             "description": "Comment created",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/Comment" }
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     },
     "/comments/{id}": {
-      "delete": {
-        "tags": ["Comments"],
-        "summary": "Delete comment by ID",
-        "security": [{ "cookieAuth": [] }],
+      "put": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Update comment text by ID",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
+            "description": "MongoDB ObjectId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CommentUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Comment"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Comments"
+        ],
+        "summary": "Delete comment by ID",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
             "description": "MongoDB ObjectId"
           }
         ],
@@ -539,16 +900,27 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": { "type": "string", "example": "Comment deleted successfully" }
+                    "message": {
+                      "type": "string",
+                      "example": "Comment deleted successfully"
+                    }
                   }
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/ServerError" }
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
         }
       }
     }
@@ -566,7 +938,9 @@
         "description": "Invalid input",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -574,7 +948,9 @@
         "description": "Unauthorized",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -582,7 +958,9 @@
         "description": "Resource not found",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       },
@@ -590,7 +968,9 @@
         "description": "Internal server error",
         "content": {
           "application/json": {
-            "schema": { "$ref": "#/components/schemas/Error" }
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
           }
         }
       }
@@ -599,14 +979,23 @@
       "Error": {
         "type": "object",
         "properties": {
-          "message": { "type": "string", "example": "Validation failed" },
+          "message": {
+            "type": "string",
+            "example": "Validation failed"
+          },
           "errors": {
             "type": "array",
             "items": {
               "type": "object",
               "properties": {
-                "field": { "type": "string", "example": "title" },
-                "message": { "type": "string", "example": "Title is required" }
+                "field": {
+                  "type": "string",
+                  "example": "title"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Title is required"
+                }
               }
             }
           }
@@ -615,134 +1004,329 @@
       "User": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f77" },
-          "name": { "type": "string", "example": "Alice Tanaka" },
-          "email": { "type": "string", "example": "alice@example.com" },
-          "oauthProvider": { "type": "string", "example": "google" },
-          "oauthId": { "type": "string", "example": "117200000000000000000" },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
+          "name": {
+            "type": "string",
+            "example": "Alice Tanaka"
+          },
+          "email": {
+            "type": "string",
+            "example": "alice@example.com"
+          },
+          "oauthProvider": {
+            "type": "string",
+            "example": "google"
+          },
+          "oauthId": {
+            "type": "string",
+            "example": "117200000000000000000"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "Project": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f11" },
-          "projectName": { "type": "string", "example": "Capstone API" },
-          "description": { "type": "string", "example": "Backend implementation for class project" },
-          "ownerId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f77" },
+          "_id": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f11"
+          },
+          "projectName": {
+            "type": "string",
+            "example": "Capstone API"
+          },
+          "description": {
+            "type": "string",
+            "example": "Backend implementation for class project"
+          },
+          "ownerId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
           "members": {
             "type": "array",
-            "items": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" }
+            "items": {
+              "type": "string",
+              "example": "699a31a4ab7b6e21bb36a7f1"
+            }
           },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ProjectCreateInput": {
         "type": "object",
-        "required": ["projectName"],
+        "required": [
+          "projectName"
+        ],
         "properties": {
-          "projectName": { "type": "string", "example": "Capstone API" },
-          "description": { "type": "string", "example": "Backend implementation for class project" },
-          "ownerId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f77" },
+          "projectName": {
+            "type": "string",
+            "example": "Capstone API"
+          },
+          "description": {
+            "type": "string",
+            "example": "Backend implementation for class project"
+          },
+          "ownerId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
           "members": {
             "type": "array",
-            "items": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" }
+            "items": {
+              "type": "string",
+              "example": "699a31a4ab7b6e21bb36a7f1"
+            }
           }
         }
       },
       "ProjectUpdateInput": {
         "type": "object",
         "properties": {
-          "projectName": { "type": "string", "example": "Capstone API v2" },
-          "description": { "type": "string", "example": "Updated description" },
-          "ownerId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f77" },
+          "projectName": {
+            "type": "string",
+            "example": "Capstone API v2"
+          },
+          "description": {
+            "type": "string",
+            "example": "Updated description"
+          },
+          "ownerId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
           "members": {
             "type": "array",
-            "items": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" }
+            "items": {
+              "type": "string",
+              "example": "699a31a4ab7b6e21bb36a7f1"
+            }
           }
         }
       },
       "Task": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f22" },
-          "title": { "type": "string", "example": "Implement auth route" },
-          "description": { "type": "string", "example": "Create Google OAuth login flow" },
+          "_id": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f22"
+          },
+          "title": {
+            "type": "string",
+            "example": "Implement auth route"
+          },
+          "description": {
+            "type": "string",
+            "example": "Create Google OAuth login flow"
+          },
           "status": {
             "type": "string",
-            "enum": ["todo", "in-progress", "done"],
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
             "example": "in-progress"
           },
           "priority": {
             "type": "string",
-            "enum": ["low", "medium", "high"],
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
             "example": "high"
           },
-          "dueDate": { "type": "string", "format": "date-time" },
-          "projectId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f11" },
-          "assignedUserId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "projectId": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f11"
+          },
+          "assignedUserId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "TaskCreateInput": {
         "type": "object",
-        "required": ["title", "projectId"],
+        "required": [
+          "title",
+          "projectId"
+        ],
         "properties": {
-          "title": { "type": "string", "example": "Implement auth route" },
-          "description": { "type": "string", "example": "Create Google OAuth login flow" },
+          "title": {
+            "type": "string",
+            "example": "Implement auth route"
+          },
+          "description": {
+            "type": "string",
+            "example": "Create Google OAuth login flow"
+          },
           "status": {
             "type": "string",
-            "enum": ["todo", "in-progress", "done"],
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
             "example": "todo"
           },
           "priority": {
             "type": "string",
-            "enum": ["low", "medium", "high"],
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
             "example": "medium"
           },
-          "dueDate": { "type": "string", "format": "date-time" },
-          "projectId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f11" },
-          "assignedUserId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" }
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "projectId": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f11",
+            "description": "Existing project _id. Create a project first if needed."
+          },
+          "assignedUserId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1",
+            "description": "Optional existing user _id."
+          }
+        },
+        "example": {
+          "title": "Implement auth route",
+          "description": "Create Google OAuth login flow",
+          "status": "todo",
+          "priority": "medium",
+          "dueDate": "2026-05-01T12:00:00.000Z",
+          "projectId": "PASTE_EXISTING_PROJECT_ID_HERE",
+          "assignedUserId": "PASTE_EXISTING_USER_ID_HERE"
         }
       },
       "TaskUpdateInput": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "example": "Implement auth route" },
-          "description": { "type": "string", "example": "Create Google OAuth login flow" },
+          "title": {
+            "type": "string",
+            "example": "Implement auth route"
+          },
+          "description": {
+            "type": "string",
+            "example": "Create Google OAuth login flow"
+          },
           "status": {
             "type": "string",
-            "enum": ["todo", "in-progress", "done"],
+            "enum": [
+              "todo",
+              "in-progress",
+              "done"
+            ],
             "example": "done"
           },
           "priority": {
             "type": "string",
-            "enum": ["low", "medium", "high"],
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
             "example": "high"
           },
-          "dueDate": { "type": "string", "format": "date-time" },
-          "projectId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f11" },
-          "assignedUserId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f88" }
+          "dueDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "projectId": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f11",
+            "description": "Existing project _id."
+          },
+          "assignedUserId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1",
+            "description": "Optional existing user _id."
+          }
         }
       },
       "Comment": {
         "type": "object",
         "properties": {
-          "_id": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f33" },
-          "taskId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f22" },
-          "userId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f77" },
-          "commentText": { "type": "string", "example": "I will finish this by tonight." },
-          "createdAt": { "type": "string", "format": "date-time" }
+          "_id": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f33"
+          },
+          "taskId": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f22"
+          },
+          "userId": {
+            "type": "string",
+            "example": "699a31a4ab7b6e21bb36a7f1"
+          },
+          "commentText": {
+            "type": "string",
+            "example": "I will finish this by tonight."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CommentCreateInput": {
         "type": "object",
-        "required": ["taskId", "commentText"],
+        "required": [
+          "taskId",
+          "commentText"
+        ],
         "properties": {
-          "taskId": { "type": "string", "example": "65ff86e2f8e6dbeb0d0f7f22" },
-          "commentText": { "type": "string", "example": "I will finish this by tonight." }
+          "taskId": {
+            "type": "string",
+            "example": "65ff86e2f8e6dbeb0d0f7f22"
+          },
+          "commentText": {
+            "type": "string",
+            "example": "I will finish this by tonight."
+          }
+        }
+      },
+      "CommentUpdateInput": {
+        "type": "object",
+        "required": [
+          "commentText"
+        ],
+        "properties": {
+          "commentText": {
+            "type": "string",
+            "example": "Updated progress note."
+          }
         }
       }
     }

@@ -1,49 +1,109 @@
-### Get all contacts
-GET http://localhost:3000/tasks
+@baseUrl = http://localhost:3000
+@sessionCookie = paste-connect.sid-cookie-here
+@userId = 699a31a4ab7b6e21bb36a7f1
+@projectId = 65ff86e2f8e6dbeb0d0f7f11
+@taskId = 65ff86e2f8e6dbeb0d0f7f22
+@commentId = 65ff86e2f8e6dbeb0d0f7f33
 
-###
+### Health check
+GET {{baseUrl}}/
 
-### Get single contact 1
-GET http://localhost:3000/tasks/6985f55b827acec8c9b62dee
+### Start Google OAuth login
+GET {{baseUrl}}/auth/google
 
-###
+### Get current user after OAuth login
+GET {{baseUrl}}/auth/me
+Cookie: connect.sid={{sessionCookie}}
 
-### Get single contact 2
-GET http://localhost:3000/tasks/69860322c674901e8216b450
+### Get all users
+GET {{baseUrl}}/users
+Cookie: connect.sid={{sessionCookie}}
 
-###
+### Get one user
+GET {{baseUrl}}/users/{{userId}}
+Cookie: connect.sid={{sessionCookie}}
 
-### Get single contact 3
-GET http://localhost:3000/tasks/6986083ca1da1a1e56847abd
-
-
-
-### Create Contact
-POST http://localhost:3000/tasks
+### Create project
+POST {{baseUrl}}/projects
 Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
 
 {
-    "_id": "6985f55b827acec8c9b62dee",
-    "title": "any",
-    "status": "todo",
-    "priority": "medium",
-    "isArchived": false,
-    "createdAt": "2026-02-06T14:06:19.583Z",
-    "updatedAt": "2026-02-06T14:06:19.583Z",
-    "__v": 0
-  }
-
-### Update Contact
-PUT http://localhost:3000/tasks/698a96b8fdf5c668ff083f5b
-Content-Type: application/json
-
-{
-  "title": "Updated Task Title",
-  "priority": "high",
-  "status": "in-progress",
-  "isArchived": false
+  "projectName": "Sprint Planning API",
+  "description": "Shared project for milestone tracking",
+  "ownerId": "{{userId}}",
+  "members": ["{{userId}}"]
 }
 
+### Update project
+PUT {{baseUrl}}/projects/{{projectId}}
+Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
 
-### Delete Contact
-DELETE http://localhost:3000/tasks/6986083ca1da1a1e56847abd
+{
+  "description": "Updated project description"
+}
+
+### Delete project
+DELETE {{baseUrl}}/projects/{{projectId}}
+Cookie: connect.sid={{sessionCookie}}
+
+### Get all tasks
+GET {{baseUrl}}/tasks
+Cookie: connect.sid={{sessionCookie}}
+
+### Create task
+POST {{baseUrl}}/tasks
+Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
+
+{
+  "title": "Implement OAuth callback handling",
+  "description": "Complete the Google OAuth login flow",
+  "status": "todo",
+  "priority": "high",
+  "dueDate": "2026-05-01T12:00:00.000Z",
+  "projectId": "{{projectId}}",
+  "assignedUserId": "{{userId}}"
+}
+
+### Update task
+PUT {{baseUrl}}/tasks/{{taskId}}
+Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
+
+{
+  "status": "in-progress",
+  "priority": "medium"
+}
+
+### Delete task
+DELETE {{baseUrl}}/tasks/{{taskId}}
+Cookie: connect.sid={{sessionCookie}}
+
+### Get comments for a task
+GET {{baseUrl}}/comments/{{taskId}}
+Cookie: connect.sid={{sessionCookie}}
+
+### Create comment
+POST {{baseUrl}}/comments
+Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
+
+{
+  "taskId": "{{taskId}}",
+  "commentText": "I am working on this now."
+}
+
+### Update comment
+PUT {{baseUrl}}/comments/{{commentId}}
+Content-Type: application/json
+Cookie: connect.sid={{sessionCookie}}
+
+{
+  "commentText": "Updated progress note."
+}
+
+### Delete comment
+DELETE {{baseUrl}}/comments/{{commentId}}
+Cookie: connect.sid={{sessionCookie}}

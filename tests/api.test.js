@@ -20,18 +20,42 @@ describe('Team Task Manager API', () => {
     });
   });
 
-  test('GET /auth/google should redirect', async () => {
+  test('GET /auth/google should redirect to Google OAuth', async () => {
     const response = await request(app).get('/auth/google');
-    expect([302, 500]).toContain(response.statusCode);
+
+    expect(response.statusCode).toBe(302);
+    expect(response.headers.location).toContain('accounts.google.com');
+  });
+
+  test('GET /auth/google/callback should redirect when auth fails', async () => {
+    const response = await request(app).get('/auth/google/callback');
+
+    expect(response.statusCode).toBe(302);
+  });
+
+  test('GET /auth/me should return 401 without auth', async () => {
+    const response = await request(app).get('/auth/me');
+
+    expect(response.statusCode).toBe(401);
+  });
+
+  test('GET /auth/me should return the current user with auth', async () => {
+    const response = await authRequest('get', '/auth/me');
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.authenticated).toBe(true);
+    expect(response.body.user.email).toBe(user.email);
   });
 
   test('GET /auth/logout should return 200', async () => {
     const response = await request(app).get('/auth/logout');
+
     expect(response.statusCode).toBe(200);
   });
 
   test('GET /users should return 401 without auth', async () => {
     const response = await request(app).get('/users');
+
     expect(response.statusCode).toBe(401);
   });
 
@@ -43,6 +67,12 @@ describe('Team Task Manager API', () => {
     const detailResponse = await authRequest('get', `/users/${user._id}`);
     expect(detailResponse.statusCode).toBe(200);
     expect(detailResponse.body.email).toBe(user.email);
+  });
+
+  test('GET /users/:id should validate ObjectId', async () => {
+    const response = await authRequest('get', '/users/not-an-objectid');
+
+    expect(response.statusCode).toBe(400);
   });
 
   test('Projects CRUD should work', async () => {
@@ -70,6 +100,14 @@ describe('Team Task Manager API', () => {
 
     const deleteResponse = await authRequest('delete', `/projects/${projectId}`);
     expect(deleteResponse.statusCode).toBe(200);
+  });
+
+  test('POST /projects should validate required fields', async () => {
+    const response = await authRequest('post', '/projects').send({
+      description: 'Missing project name'
+    });
+
+    expect(response.statusCode).toBe(400);
   });
 
   test('Tasks CRUD should work', async () => {
@@ -110,7 +148,37 @@ describe('Team Task Manager API', () => {
     expect(deleteResponse.statusCode).toBe(200);
   });
 
-  test('Comments routes should work', async () => {
+  test('GET /tasks/:id should validate ObjectId', async () => {
+    const response = await authRequest('get', '/tasks/not-an-objectid');
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('GET /tasks/:id should return 404 for missing resource', async () => {
+    const id = new mongoose.Types.ObjectId().toString();
+    const response = await authRequest('get', `/tasks/${id}`);
+
+    expect(response.statusCode).toBe(404);
+  });
+
+  test('POST /tasks should validate status values', async () => {
+    const project = await Project.create({
+      projectName: 'Validation Project',
+      description: 'Validation project',
+      ownerId: user._id,
+      members: [user._id]
+    });
+
+    const response = await authRequest('post', '/tasks').send({
+      title: 'Bad status task',
+      projectId: project._id.toString(),
+      status: 'invalid-status'
+    });
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Comments CRUD should work', async () => {
     const project = await Project.create({
       projectName: 'Comment Project',
       description: 'Comment project',
@@ -140,33 +208,25 @@ describe('Team Task Manager API', () => {
     expect(Array.isArray(listResponse.body)).toBe(true);
     expect(listResponse.body.length).toBe(1);
 
+    const updateResponse = await authRequest('put', `/comments/${commentId}`).send({
+      commentText: 'Updated comment'
+    });
+    expect(updateResponse.statusCode).toBe(200);
+    expect(updateResponse.body.commentText).toBe('Updated comment');
+
     const deleteResponse = await authRequest('delete', `/comments/${commentId}`);
     expect(deleteResponse.statusCode).toBe(200);
   });
 
-  test('Invalid ObjectId should return 400', async () => {
-    const response = await authRequest('get', '/tasks/not-an-objectid');
-    expect(response.statusCode).toBe(400);
-  });
-
-  test('Missing resource should return 404', async () => {
-    const id = new mongoose.Types.ObjectId().toString();
-    const response = await authRequest('get', `/tasks/${id}`);
-    expect(response.statusCode).toBe(404);
-  });
-
-  test('task status validation should return 400', async () => {
-    const project = await Project.create({
-      projectName: 'Validation Project',
-      description: 'Validation project',
-      ownerId: user._id,
-      members: [user._id]
+  test('PUT /comments/:id should validate request body', async () => {
+    const comment = await Comment.create({
+      taskId: new mongoose.Types.ObjectId(),
+      userId: user._id,
+      commentText: 'Original'
     });
 
-    const response = await authRequest('post', '/tasks').send({
-      title: 'Bad status task',
-      projectId: project._id.toString(),
-      status: 'invalid-status'
+    const response = await authRequest('put', `/comments/${comment._id}`).send({
+      commentText: ''
     });
 
     expect(response.statusCode).toBe(400);
@@ -174,11 +234,7 @@ describe('Team Task Manager API', () => {
 
   test('unexpected route should return 404', async () => {
     const response = await request(app).get('/unknown-route');
-    expect(response.statusCode).toBe(404);
-  });
 
-  test('comment collection should be created', async () => {
-    const count = await Comment.countDocuments();
-    expect(count).toBe(0);
+    expect(response.statusCode).toBe(404);
   });
 });

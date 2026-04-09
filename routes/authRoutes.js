@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const passport = require('passport');
 const { hasGoogleConfig } = require('../config/passport');
+const auth = require('../middleware/auth');
 
 router.get('/google', (req, res, next) => {
   if (!hasGoogleConfig) {
@@ -53,11 +54,7 @@ router.get('/logout', (req, res, next) => {
   });
 });
 
-router.get('/me', (req, res) => {
-  if (!req.isAuthenticated || !req.isAuthenticated()) {
-    return res.status(401).json({ message: 'Unauthorized: Please log in' });
-  }
-
+router.get('/me', auth, (req, res) => {
   return res.status(200).json({
     authenticated: true,
     user: req.user
